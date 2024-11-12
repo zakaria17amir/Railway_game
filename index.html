@@ -1,152 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Railway Game</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.15.0/dist/full.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.15.0/dist/full.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
-</head>
+  </head>
 
+  <body>
+    <div
+      id="landingScreen"
+      class="landing text-center mt-10 border border-gray-400 rounded-lg p-6"
+    >
+      <h1 class="text-6xl text-yellow-400 mb-4">RAILWAYS</h1>
+      <input
+        type="text"
+        id="playerName"
+        class="input input-bordered w-1/2 mx-auto mb-4"
+        placeholder="WHO ARE YOU?"
+      />
 
-<body>
-    <div id="landingScreen" class="landing text-center mt-10 border border-gray-400 rounded-lg p-6">
-        <h1 class="text-6xl text-yellow-400 mb-4">RAILWAYS</h1>
-        <input type="text" id="playerName" class="input input-bordered w-1/2 mx-auto mb-4" placeholder="WHO ARE YOU?" />
-
-        <!-- Difficulty Section ----------------------------------------->
-        <div class="mb-6">
-            <h5 class="text-xl text-gray-500">SET THE DIFFICULTY!</h5>
-            <div class="flex justify-center gap-4">
-                <button id="easyButton" class="easy-btn btn btn-outline btn-success px-6 py-3">
-                    5 X 5<br /><small>EASY</small>
-                </button>
-                <button id="hardButton" class="hard-btn btn btn-outline btn-success px-6 py-3">
-                    7 X 7<br /><small>HARD</small>
-                </button>
-            </div>
-        </div>
-
-        <!-- Menu Buttons ------------------------------------------------>
+      <!-- Difficulty Section ----------------------------------------->
+      <div class="mb-6">
+        <h5 class="text-xl text-gray-500">SET THE DIFFICULTY!</h5>
         <div class="flex justify-center gap-4">
-            <button class="btn btn-secondary" id="rulesButton">RULES</button>
-            <button id="startGameButton" class="btn btn-primary">START GAME</button>
+          <button
+            id="easyButton"
+            class="easy-btn btn btn-outline btn-success px-6 py-3"
+          >
+            5 X 5<br /><small>EASY</small>
+          </button>
+          <button
+            id="hardButton"
+            class="hard-btn btn btn-outline btn-success px-6 py-3"
+          >
+            7 X 7<br /><small>HARD</small>
+          </button>
         </div>
-        <!-- Error message placeholder ----------------------------------->
-        <p id="errorMessage" class="text-red-500 mt-4"></p>
+      </div>
 
-        <!-- Popup for Game Rules ----------------------------------------->
-        <div id="rulesPopup"
-            class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 border rounded-lg bg-white shadow-lg hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg">Game Rules</h3>
-                <button id="closeRules" type="button" class="btn btn-sm btn-circle btn-outline"
-                    aria-label="Close"></button>
-            </div>
-            <div id="rules-body">
-                <h6 class="font-bold">Objective</h6>
-                <p>
-                    The goal is to create a continuous circular railway line that reaches all
-                    travelable locations on a square grid. The railway cannot cross itself,
-                    branch, or pass through any cell more than once.
-                </p>
+      <!-- Menu Buttons ------------------------------------------------>
+      <div class="flex justify-center gap-4">
+        <button class="btn btn-secondary" id="rulesButton">RULES</button>
+        <button id="startGameButton" class="btn btn-primary">START GAME</button>
+      </div>
+      <p id="errorMessage" class="text-red-500 mt-4"></p>
 
-                <h6 class="font-bold">Gameplay</h6>
-                <ul class="list-disc list-inside pl-5 text-left">
-                    <li>The game is played on a 5x5 (Easy) or 7x7 (Hard) grid.</li>
-                    <li>
-                        Different terrain types on the map include:
-                        <ul class="list-disc list-inside">
-                            <li><strong>Free tiles:</strong> Railway can go in multiple directions.</li>
-                            <li><strong>Bridge tiles:</strong> Railway can only go straight.</li>
-                            <li><strong>Mountain tiles:</strong> Blocks two adjacent exits, allowing only 90° turns.
-                            </li>
-                            <li><strong>Impassable tiles:</strong> Railway cannot be built here.</li>
-                        </ul>
-                    </li>
-                </ul>
-
-                <h6 class="font-bold">Game Conditions</h6>
-                <ul class="list-disc list-inside pl-5 text-left">
-                    <li>Each cell has two exit points, allowing trains to enter and exit correctly.</li>
-                    <li>All required cells are covered by the railway.</li>
-                    <li>Cells that shouldn't have tracks remain empty.</li>
-                </ul>
-
-                <h6 class="font-bold">Game Menu</h6>
-                <ul class="list-disc list-inside pl-5 text-left">
-                    <li>Players must enter their name and select a difficulty level (Easy or Hard) before starting.</li>
-                    <li>The menu includes options to view game rules and, optionally, a leaderboard.</li>
-                </ul>
-
-                <h6 class="font-bold">Game Completion</h6>
-                <ul class="list-disc list-inside pl-5 text-left">
-                    <li>The game ends when the puzzle is completed according to the rules.</li>
-                    <li>Completion time is displayed, and a leaderboard records the fastest completions.</li>
-                </ul>
-            </div>
+      <!-- Popup for Game Rules ----------------------------------------->
+      <div
+        id="rulesPopup"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 border rounded-lg bg-white shadow-lg hidden"
+      >
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg">Game Rules</h3>
+          <button
+            id="closeRules"
+            type="button"
+            class="btn btn-sm btn-circle btn-outline"
+            aria-label="Close"
+          ></button>
         </div>
+        <div id="rules-body">
+          <h6 class="font-bold">Objective</h6>
+          <p>
+            The goal is to create a continuous circular railway line that
+            reaches all travelable locations on a square grid. The railway
+            cannot cross itself, branch, or pass through any cell more than
+            once.
+          </p>
+
+          <h6 class="font-bold">Gameplay</h6>
+          <ul class="list-disc list-inside pl-5 text-left">
+            <li>The game is played on a 5x5 (Easy) or 7x7 (Hard) grid.</li>
+            <li>
+              Different terrain types on the map include:
+              <ul class="list-disc list-inside">
+                <li>
+                  <strong>Free tiles:</strong> Railway can go in multiple
+                  directions.
+                </li>
+                <li>
+                  <strong>Bridge tiles:</strong> Railway can only go straight.
+                </li>
+                <li>
+                  <strong>Mountain tiles:</strong> Blocks two adjacent exits,
+                  allowing only 90° turns.
+                </li>
+                <li>
+                  <strong>Impassable tiles:</strong> Railway cannot be built
+                  here.
+                </li>
+              </ul>
+            </li>
+          </ul>
+
+          <h6 class="font-bold">Game Conditions</h6>
+          <ul class="list-disc list-inside pl-5 text-left">
+            <li>
+              Each cell has two exit points, allowing trains to enter and exit
+              correctly.
+            </li>
+            <li>All required cells are covered by the railway.</li>
+            <li>Cells that shouldn't have tracks remain empty.</li>
+          </ul>
+
+          <h6 class="font-bold">Game Menu</h6>
+          <ul class="list-disc list-inside pl-5 text-left">
+            <li>
+              Players must enter their name and select a difficulty level (Easy
+              or Hard) before starting.
+            </li>
+            <li>
+              The menu includes options to view game rules and, optionally, a
+              leaderboard.
+            </li>
+          </ul>
+
+          <h6 class="font-bold">Game Completion</h6>
+          <ul class="list-disc list-inside pl-5 text-left">
+            <li>
+              The game ends when the puzzle is completed according to the rules.
+            </li>
+            <li>
+              Completion time is displayed, and a leaderboard records the
+              fastest completions.
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <!-- New Game Screen -->
     <div id="gameScreen" class="hidden flex mt-10">
-        <!-- Sidebar (Left 1/4th of the screen) -->
-        <div class="w-1/4 p-4 bg-gray-100 border-r border-gray-300">
-            <!-- Game Title -->
-            <h2 class="text-3xl font-bold text-yellow-400 mb-6">RAILWAYS</h2>
+      <!-- Sidebar Left -->
+      <div class="w-1/4 p-4 bg-gray-100 border-r border-gray-300">
+        <h2 class="text-3xl font-bold text-yellow-400 mb-6">RAILWAYS</h2>
 
-            <!-- Player Info Card -->
-            <div class="card shadow-lg mb-6 p-4 bg-white">
-                <h3 class="text-lg font-semibold mb-2">Route Designer</h3>
-                <p id="playerNameDisplay" class="text-gray-700">Player: <span id="playerDisplayName"></span></p>
-            </div>
-
-            <!-- Elapsed Time Card -->
-            <div class="card shadow-lg mb-6 p-4 bg-white">
-                <h3 class="text-lg font-semibold mb-2">Elapsed Time</h3>
-                <p id="elapsedTime" class="text-gray-700">00:00</p>
-            </div>
-            <div class="card shadow-lg mb-6 p-4 bg-white">
-                <p id="gameFinishedMessage" class="text-gray-600 mt-2">Game Finished at : <br> </p> <!-- Placeholder for finish message -->
-            </div>
-
-            <!-- Leaderboard Card -->
-            <div class="card shadow-lg p-4 bg-white">
-                <h3 class="text-lg font-semibold mb-2">Leaderboard</h3>
-                <ul id="leaderboard" class="list-disc list-inside text-gray-700">
-                    <!-- Placeholder for leaderboard entries -->
-                    <li>Player A - 02:30</li>
-                    <li>Player B - 03:15</li>
-                    <!-- Add more entries dynamically if needed -->
-                </ul>
-            </div>
+        <!-- Player Info Card -->
+        <div class="card shadow-lg mb-6 p-4 bg-white">
+          <h3 class="text-lg font-semibold mb-2">Route Designer</h3>
+          <p id="playerNameDisplay" class="text-gray-700">
+            Player: <span id="playerDisplayName"></span>
+          </p>
         </div>
 
-        <!-- Main Game Area (Right 3/4th of the screen) -->
-        <div class="w-3/4 flex flex-col items-center p-8">
-            <h2 class="text-4xl font-bold mb-4">Welcome, <span id="playerDisplayName"></span>!</h2>
-            <p class="text-xl mb-6">Difficulty: <span id="difficultyLevel"></span></p>
-            <p class="text-lg text-gray-500">Let's begin your game...</p>
-
-            <!-- Placeholder for dynamic grid -->
-            <div id="gameGrid" class="game-grid mx-auto mt-6 grid gap-2 border rounded-md p-4 bg-gray-200">
-                <!-- Dynamic grid cells will be inserted here by JavaScript -->
-            </div>
-
-            <!-- Submit button below the grid -->
-            <button id="submitButton" class="btn btn-primary mt-6">Submit</button>
-
-            <!-- Optional back button to return to the main screen -->
-            <button id="backButton" class="btn btn-outline btn-secondary mt-6">Back to Menu</button>
+        <!-- Elapsed Time Card -->
+        <div class="card shadow-lg mb-6 p-4 bg-white">
+          <h3 class="text-lg font-semibold mb-2">Elapsed Time</h3>
+          <p id="elapsedTime" class="text-gray-700">00:00</p>
+        </div>
+        <div class="card shadow-lg mb-6 p-4 bg-white">
+          <p id="gameFinishedMessage" class="text-gray-600 mt-2">
+            Game Finished at : <br />
+          </p>
+          <!-- Placeholder for finish message -->
         </div>
 
-        <!-- Optional back button to return to the main screen -->
-        <!-- <button id="backButton" class="btn btn-outline btn-secondary mt-6">Back to Menu</button> -->
+        <!-- Leaderboard Card -->
+        <div class="card shadow-lg p-4 bg-white">
+          <h3 class="text-lg font-semibold mb-2">Leaderboard</h3>
+          <ul id="leaderboard" class="list-disc list-inside text-gray-700">
+            <li>Player A - 02:30</li>
+            <li>Player B - 03:15</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Main Game Area  -->
+      <div class="w-3/4 flex flex-col items-center p-8">
+        <h2 class="text-4xl font-bold mb-4">
+          Welcome, <span id="playerDisplayName"></span>!
+        </h2>
+        <p class="text-xl mb-6">
+          Difficulty: <span id="difficultyLevel"></span>
+        </p>
+        <p class="text-lg text-gray-500">Let's begin your game...</p>
+
+        <div
+          id="gameGrid"
+          class="game-grid mx-auto mt-6 grid gap-2 border rounded-md p-4 bg-gray-200"
+        ></div>
+
+        <button id="submitButton" class="btn btn-primary mt-6">Submit</button>
+        <button id="backButton" class="btn btn-outline btn-secondary mt-6">
+          Back to Menu
+        </button>
+      </div>
     </div>
     <script src="script.js"></script>
-</body>
-
-
+  </body>
 </html>
