@@ -15,6 +15,7 @@ closeButton.onclick = function () {
 
 //---------------------------- Generation of Grid based on user input -----------------------------//
 
+// in this section we are selecting most of our required elements
 const easyButton = document.querySelector("#easyButton");
 const hardButton = document.querySelector("#hardButton");
 const startGameButton = document.querySelector("#startGameButton");
@@ -28,9 +29,10 @@ const playerNameDisplay = document.querySelector("#playerNameDisplay");
 const gameGrid = document.querySelector("#gameGrid");
 const submitButton = document.querySelector("#submitButton");
 
-let timerInterval;
+let timerInterval = null;
 let selectedDifficulty = null;
 
+// at the same time we can  only select easy or hard button
 //difficulty selection for Easy
 easyButton.onclick = function () {
   selectedDifficulty = "Easy";
@@ -46,6 +48,12 @@ hardButton.onclick = function () {
 };
 
 // Start Game function
+/*In this function at first we hide our landing page upon clicking the start game button
+and show the game screen. 
+we get the player name and grid size from the name input field and difficulty selection 
+button and generate a grid based on the difficulty and start the timer
+to count the solution time and an error message is shown if one tries to start the game
+without giving name or selecting difficulty*/
 startGameButton.onclick = function () {
   submitButton.disabled = false;
 
@@ -66,6 +74,7 @@ startGameButton.onclick = function () {
 };
 
 // Timer function
+//This function is used to track the time used for solving the puzzle
 function startTimer() {
   let elapsedSeconds = 0;
   const elapsedTimeElement = document.querySelector("#elapsedTime");
@@ -76,43 +85,28 @@ function startTimer() {
     elapsedTimeElement.textContent = `${minutes}:${seconds}`;
   }, 1000);
 }
+
 // Stop timer function
 function stopTimer() {
   clearInterval(timerInterval);
 }
 
-// Submit button function
-submitButton.onclick = function () {
-  submitButton.disabled = true;
-
-  finishGame();
-
-  const isPuzzleValid = validatePuzzle(typeMatrix);
-  const isPathValid = isPuzzleValid && validatePath(typeMatrix);
-  const message = isPathValid
-    ? "Congratulations! Puzzle solved successfully!"
-    : "Better luck next time.";
-
-  document.querySelector("#submissionMessage").textContent = message;
-
-  function updateLeaderboard() {
-    const leaderboard = document.querySelector("#leaderboard");
-    //finaltime , selectedifficulty,playername
-    const listItem = document.createElement("li");
-    listItem.innerText = `${selectedDifficulty} : ${playerNameInput.value} : ${finalTime}`;
-    leaderboard.appendChild(listItem);
-  }
-  if (isPathValid) updateLeaderboard();
-};
-
 // Back to Menu button
+//this function is for hiding the game screen and going back to the menu/landing page
 backButton.onclick = function () {
   landingScreen.classList.remove("hidden");
   gameScreen.classList.add("hidden");
 };
 
 //--------------------------------------------Map Layouts-------------------------------
-// "S" = Soil, "B" = Bridge, "M" = Mountain, "W" = Oasis/water
+/* S = Soil, W = Oasis/water, BVR = Virtical Bridge, BHR = Horizontal Bridge
+MBL = Mountain with opening at bottom and left
+MBR = Mountain with opening at bottom and right
+MTR = Mountain with opening at top and right
+MTL = Mountain with opening at top and left
+
+This section contains the hardcoded maps for our game every time we start game
+one of them will be randomly generated*/
 const easyMapLayout01 = [
   ["S", "MBL", "S", "S", "W"],
   ["S", "S", "S", "BVR", "W"],
@@ -209,37 +203,46 @@ const allHardMaps = [
   hardMapLayout04,
   hardMapLayout05,
 ];
-
+//---------------------Image Generation---------------------------------
 // Image sources for hardcoded map generation
+//here the images and the rotated version of them are stored
 const allRestrictedImages = {
+  //free map image and the oasis
   S: { src: "pics/tiles/empty.png", transform: "rotate(0deg)" },
   W: { src: "pics/tiles/oasis.png", transform: "rotate(0deg)" },
 
+  //bridges
   BVR: { src: "pics/tiles/bridge.png", transform: "rotate(0deg)" },
   BHR: { src: "pics/tiles/bridge.png", transform: "rotate(90deg)" },
 
+  //bridges with lines
   LBVR: { src: "pics/tiles/bridge_rail.png", transform: "rotate(0deg)" },
   LBHR: { src: "pics/tiles/bridge_rail.png", transform: "rotate(90deg)" },
 
+  //mountains
   MBR: { src: "pics/tiles/mountain.png", transform: "rotate(0deg)" },
   MBL: { src: "pics/tiles/mountain.png", transform: "rotate(90deg)" },
   MTL: { src: "pics/tiles/mountain.png", transform: "rotate(180deg)" },
   MTR: { src: "pics/tiles/mountain.png", transform: "rotate(270deg)" },
 
+  //mountains with lines
   LMBR: { src: "pics/tiles/mountain_rail.png", transform: "rotate(0deg)" },
   LMBL: { src: "pics/tiles/mountain_rail.png", transform: "rotate(90deg)" },
   LMTL: { src: "pics/tiles/mountain_rail.png", transform: "rotate(180deg)" },
   LMTR: { src: "pics/tiles/mountain_rail.png", transform: "rotate(270deg)" },
 
+  //curved rails
   CBR: { src: "pics/tiles/curve_rail.png", transform: "rotate(0deg)" },
   CBL: { src: "pics/tiles/curve_rail.png", transform: "rotate(90deg)" },
   CTL: { src: "pics/tiles/curve_rail.png", transform: "rotate(180deg)" },
   CTR: { src: "pics/tiles/curve_rail.png", transform: "rotate(270deg)" },
 
+  //straight rails
   LSVR: { src: "pics/tiles/straight_rail.png", transform: "rotate(0deg)" },
   LSHR: { src: "pics/tiles/straight_rail.png", transform: "rotate(90deg)" },
 };
 
+//these are the ones we can use on a empty/free cell
 const noRestrictionImages = {
   S: { src: "pics/tiles/empty.png", transform: "rotate(0deg)" },
 
@@ -253,6 +256,7 @@ const noRestrictionImages = {
 };
 
 // function to insert image to innitialize map
+//here the images are generated in the grid cell based on the type of the cell at the beginning
 function createInitializationImage(type) {
   const imageData = allRestrictedImages[type];
   const img = document.createElement("img");
@@ -264,6 +268,8 @@ function createInitializationImage(type) {
   return img;
 }
 
+//this function is used to generate the images which
+//we want to place in stead of the default ones
 function createNoRestrictionImage(type) {
   const imageData = noRestrictionImages[type];
   const img = document.createElement("img");
@@ -277,11 +283,14 @@ function createNoRestrictionImage(type) {
 
 //------------------------------------------------Create Map---------------------------------
 
+//we will use this matrix to track the type of image currently in a cell of the grid
 let typeMatrix = [];
 //function to generate grid
+
 function generateGrid(difficulty) {
   gameGrid.innerHTML = "";
 
+  //we are choosing randomly from the stored maps
   let mapLayout = null;
   let gridSize = 0;
   if (difficulty === "Easy") {
@@ -294,6 +303,7 @@ function generateGrid(difficulty) {
     mapLayout = allHardMaps[randomIndex];
   }
 
+  // we innitialized our type matrix of the grid size with all null values
   typeMatrix = Array.from({ length: gridSize }, () =>
     Array(gridSize).fill(null)
   );
@@ -301,6 +311,7 @@ function generateGrid(difficulty) {
   gameGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   gameGrid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
+  //here we create the grid and fill the divs/cells with the default images
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const cellType = mapLayout[row][col];
@@ -312,6 +323,7 @@ function generateGrid(difficulty) {
       cell.appendChild(img);
       gameGrid.appendChild(cell);
 
+      //here we have updated our tracking matrix and on click images are replaced by new images in each cell
       typeMatrix[row][col] = cellType;
       cell.addEventListener("click", () =>
         changeImage(cell, cellType, row, col)
@@ -321,11 +333,14 @@ function generateGrid(difficulty) {
 }
 //------------------ placement of images----------------------------------------
 
+/*This function is used to replace the images of the map based on the cell types
+we have switch cases so that it follows our conditions of the different cells*/
 function changeImage(cell, cellType, row, col) {
   const img = cell.querySelector("img");
   let newType = cellType;
 
   switch (cellType) {
+    //any type of rails can be placed
     case "S":
       const noRestrictionKeys = Object.keys(noRestrictionImages);
       let soilIndex = noRestrictionKeys.indexOf(img.alt);
@@ -338,9 +353,11 @@ function changeImage(cell, cellType, row, col) {
       newType = noRestrictionKeys[soilIndex];
       break;
 
+    //no rails can be placed
     case "W":
       return;
 
+    //only horizontal bridge rails can be placed
     case "BHR":
       const bridgeHImages = ["BHR", "LBHR"];
       let bridgeHIndex = bridgeHImages.indexOf(img.alt);
@@ -354,6 +371,7 @@ function changeImage(cell, cellType, row, col) {
 
       break;
 
+    //only vertical bridge rails can be placed
     case "BVR":
       const bridgeVImages = ["BVR", "LBVR"];
       let bridgeVIndex = bridgeVImages.indexOf(img.alt);
@@ -367,6 +385,7 @@ function changeImage(cell, cellType, row, col) {
 
       break;
 
+    //mountain rails with openning at bottom and right side can be placed
     case "MBR":
       const mountainBRImages = ["MBR", "LMBR"];
       let mountainBRIndex = mountainBRImages.indexOf(img.alt);
@@ -380,6 +399,7 @@ function changeImage(cell, cellType, row, col) {
 
       break;
 
+    //mountain rails with openning at bottom and left side can be placed
     case "MBL":
       const mountainBLImages = ["MBL", "LMBL"];
       let mountainBLIndex = mountainBLImages.indexOf(img.alt);
@@ -393,6 +413,7 @@ function changeImage(cell, cellType, row, col) {
 
       break;
 
+    //mountain rails with openning at top and left side can be placed
     case "MTL":
       const mountainTLImages = ["MTL", "LMTL"];
       let mountainTLIndex = mountainTLImages.indexOf(img.alt);
@@ -405,6 +426,7 @@ function changeImage(cell, cellType, row, col) {
       cell.replaceChild(newMountainTLImage, img);
       break;
 
+    //mountain rails with openning at top and right side can be placed
     case "MTR":
       const mountainTRImages = ["MTR", "LMTR"];
       let mountainTRIndex = mountainTRImages.indexOf(img.alt);
@@ -421,11 +443,12 @@ function changeImage(cell, cellType, row, col) {
     default:
       console.warn(`Unknown cell type: ${cellType}`);
   }
+  //here the tracking matrix is updated
   typeMatrix[row][col] = newType;
 }
 
 //----------------minimum requirements done-----------------------------------
-// Finish game function to stop the timer, display message, and reset elapsed time
+//function to stop the timer, display message, and reset elapsed time
 let finalTime = null;
 function finishGame() {
   const elapsedTimeElement = document.querySelector("#elapsedTime");
@@ -443,6 +466,7 @@ function finishGame() {
 // ----------------checking part------------------------------
 
 //-----------------------------no null cell--------------------------
+//here we stored valid cell image types that can each cell have
 const validPathTypes = [
   "LBVR",
   "LBHR",
@@ -459,6 +483,8 @@ const validPathTypes = [
   "W",
 ];
 
+/*by this function we check that every cell has valid images using the tracking matrix
+if any of them are not valid then we return false which means the puzzle is not solved*/
 function validateNoNullCell(typeMatrix) {
   for (let row = 0; row < typeMatrix.length; row++) {
     for (let col = 0; col < typeMatrix[row].length; col++) {
@@ -477,6 +503,7 @@ function validateNoNullCell(typeMatrix) {
   return true;
 }
 
+//this function checks the the first condition that no cell has any invalid images if there is any puzzle is not solved
 function validatePuzzle(typeMatrix) {
   const isNoNullCellValid = validateNoNullCell(typeMatrix);
 
@@ -491,6 +518,7 @@ function validatePuzzle(typeMatrix) {
   return true;
 }
 //------------------------------------Check adjacent cells-----------------------
+//this function is used to get the endpoints/ opening of each cell based on the cell types
 function getEndpoints(cellType) {
   switch (cellType) {
     case "W":
@@ -525,6 +553,8 @@ function getEndpoints(cellType) {
   }
 }
 
+//using this function we check that the adjacent cells has their opening aligned or not
+//e.g: a straight rail is connected to another straight rail so the right side opening is aligned with left side opening of another straight rail
 function checkConnection(cell2, direction) {
   const cell2Endpoints = getEndpoints(cell2.type);
 
@@ -544,10 +574,11 @@ function checkConnection(cell2, direction) {
   return false;
 }
 
+//this fuction is used to check if every cell and their adjacent cells has their openings aligned
 function validatePath(typeMatrix) {
   const gridSize = typeMatrix.length;
 
-  // Function to get a valid non-water starting cell
+  // Function to get a valid non-water/oasis starting cell
   function findStartCell() {
     for (let row = 0; row < gridSize; row++) {
       for (let col = 0; col < gridSize; col++) {
@@ -573,13 +604,13 @@ function validatePath(typeMatrix) {
     r: { rowOffset: 0, colOffset: 1, opposite: "l" },
   };
 
+  //total number of cell that has rails
   const totalPathCells = gridSize * gridSize - countWaterCells(typeMatrix);
   const startCellType = typeMatrix[row][col];
 
   const startEndpoints = getEndpoints(startCellType);
   let initialDirection = startEndpoints[0];
 
-  // Use initial direction to find the first adjacent cell
   const firstDirection = directions[initialDirection];
   const firstRow = row + firstDirection.rowOffset;
   const firstCol = col + firstDirection.colOffset;
@@ -608,6 +639,8 @@ function validatePath(typeMatrix) {
     const cellType = typeMatrix[row][col];
     const cellEndpoints = getEndpoints(cellType);
 
+    /*if we get back to our first cell before visiting all the cells containg rails
+    it means we have a smaller loop in the map and it fails to solve the puzzle*/
     if (visitedCells > 0 && row === startCell.row && col === startCell.col) {
       console.log("visited cells: " + visitedCells);
       return false;
@@ -624,6 +657,7 @@ function validatePath(typeMatrix) {
     let connected = false;
     const nextEnd = cellEndpoints.find((end) => end !== previousEnd);
 
+    //when one cell is checked we update its end as previous end and the next one as current end
     if (nextEnd) {
       const direction = directions[nextEnd];
       const nextRow = row + direction.rowOffset;
@@ -675,6 +709,34 @@ function validatePath(typeMatrix) {
   );
 }
 
+//here we count the amount of cells that has oasis/water
 function countWaterCells(typeMatrix) {
   return typeMatrix.flat().filter((type) => type === "W").length;
 }
+
+// Submit button function
+/*by clicking submit button the programs stras to check if the puzzle has been solved
+based on result it sends a message and if the puzzle is solved then it adds player name 
+to the leaderboard with type and time */
+submitButton.onclick = function () {
+  submitButton.disabled = true;
+
+  finishGame();
+
+  const isPuzzleValid = validatePuzzle(typeMatrix);
+  const isPathValid = isPuzzleValid && validatePath(typeMatrix);
+  const message = isPathValid
+    ? "Congratulations! Puzzle solved successfully!"
+    : "Better luck next time.";
+
+  document.querySelector("#submissionMessage").textContent = message;
+
+  function updateLeaderboard() {
+    const leaderboard = document.querySelector("#leaderboard");
+    //finaltime , selectedifficulty,playername
+    const listItem = document.createElement("li");
+    listItem.innerText = `${selectedDifficulty} : ${playerNameInput.value} : ${finalTime}`;
+    leaderboard.appendChild(listItem);
+  }
+  if (isPathValid) updateLeaderboard();
+};
