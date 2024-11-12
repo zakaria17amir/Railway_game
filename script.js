@@ -88,14 +88,21 @@ submitButton.onclick = function () {
   finishGame();
 
   const isPuzzleValid = validatePuzzle(typeMatrix);
-  if (isPuzzleValid) {
-    const cond2 = validatePath(typeMatrix);
-    if (cond2) {
-      console.log("Puzzle solved successfully!");
-    }
-  } else {
-    console.log("Puzzle is not solved.");
+  const isPathValid = isPuzzleValid && validatePath(typeMatrix);
+  const message = isPathValid
+    ? "Congratulations! Puzzle solved successfully!"
+    : "Better luck next time.";
+
+  document.querySelector("#submissionMessage").textContent = message;
+
+  function updateLeaderboard() {
+    const leaderboard = document.querySelector("#leaderboard");
+    //finaltime , selectedifficulty,playername
+    const listItem = document.createElement("li");
+    listItem.innerText = `${selectedDifficulty} : ${playerNameInput.value} : ${finalTime}`;
+    leaderboard.appendChild(listItem);
   }
+  if (isPathValid) updateLeaderboard();
 };
 
 // Back to Menu button
@@ -419,11 +426,12 @@ function changeImage(cell, cellType, row, col) {
 
 //----------------minimum requirements done-----------------------------------
 // Finish game function to stop the timer, display message, and reset elapsed time
+let finalTime = null;
 function finishGame() {
   const elapsedTimeElement = document.querySelector("#elapsedTime");
   const gameFinishedMessage = document.querySelector("#gameFinishedMessage");
 
-  const finalTime = elapsedTimeElement.textContent;
+  finalTime = elapsedTimeElement.textContent;
 
   stopTimer();
 
@@ -567,19 +575,14 @@ function validatePath(typeMatrix) {
 
   const totalPathCells = gridSize * gridSize - countWaterCells(typeMatrix);
   const startCellType = typeMatrix[row][col];
-  console.log(startCellType);
+
   const startEndpoints = getEndpoints(startCellType);
-  console.log(startEndpoints);
   let initialDirection = startEndpoints[0];
-  console.log(initialDirection);
 
   // Use initial direction to find the first adjacent cell
   const firstDirection = directions[initialDirection];
-  console.log(firstDirection);
   const firstRow = row + firstDirection.rowOffset;
-  console.log(firstRow);
   const firstCol = col + firstDirection.colOffset;
-  console.log(firstCol);
 
   if (
     firstRow < 0 ||
@@ -591,7 +594,6 @@ function validatePath(typeMatrix) {
   }
 
   const firstCellType = typeMatrix[firstRow][firstCol];
-  console.log(firstCellType);
   if (
     firstCellType === "W" ||
     !checkConnection({ type: firstCellType }, initialDirection)
