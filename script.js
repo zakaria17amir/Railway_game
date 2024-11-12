@@ -1,19 +1,19 @@
-//----------------------- Rules part -----------------------------------//
+//-----------------------------------Rules Part -------------------------- //
 const rulesButton = document.querySelector("#rulesButton");
 const rulesPopup = document.querySelector("#rulesPopup");
 const closeButton = document.querySelector("#closeRules");
 
 // Show the popup when "Rules" button is clicked
 rulesButton.onclick = function () {
-  rulesPopup.classList.remove("hidden"); // Updated to use DaisyUI's `hidden` class
+  rulesPopup.classList.remove("hidden");
 };
 
 // Hide the popup when the close button is clicked
 closeButton.onclick = function () {
-  rulesPopup.classList.add("hidden"); // Updated to use DaisyUI's `hidden` class
+  rulesPopup.classList.add("hidden");
 };
 
-//---------------------------- Select which screen will appear based on the user -----------------------------//
+//---------------------------- Generation of Grid based on user input -----------------------------//
 
 const easyButton = document.querySelector("#easyButton");
 const hardButton = document.querySelector("#hardButton");
@@ -29,41 +29,37 @@ const gameGrid = document.querySelector("#gameGrid");
 const submitButton = document.querySelector("#submitButton");
 
 let timerInterval;
-let selectedDifficulty = null; // Variable to store selected difficulty
+let selectedDifficulty = null;
 
-// Handle difficulty selection for Easy
+//difficulty selection for Easy
 easyButton.onclick = function () {
   selectedDifficulty = "Easy";
   easyButton.classList.add("active");
   hardButton.classList.remove("active");
 };
 
-// Handle difficulty selection for Hard
+//difficulty selection for Hard
 hardButton.onclick = function () {
   selectedDifficulty = "Hard";
   hardButton.classList.add("active");
   easyButton.classList.remove("active");
 };
 
-// Handle Start Game button click
+// Start Game function
 startGameButton.onclick = function () {
-  //submitButton.disabled = false; // Enable the submit button
+  submitButton.disabled = false;
 
   const playerName = playerNameInput.value.trim();
 
-  // Check if a difficulty is selected and a name is entered
   if (selectedDifficulty && playerName) {
-    // Hide the landing screen and show the game screen
     gameScreen.classList.remove("hidden");
     landingScreen.classList.add("hidden");
     playerDisplayName.innerText = playerName;
     difficultyLevel.innerText = selectedDifficulty;
     playerNameDisplay.innerText = playerName;
-    // Generate the grid based on the selected difficulty
     generateGrid(selectedDifficulty);
     startTimer();
   } else {
-    // Alert the user to select difficulty and enter a name
     errorMessage.textContent =
       "Please enter your name and select a difficulty to start the game.";
   }
@@ -85,15 +81,13 @@ function stopTimer() {
   clearInterval(timerInterval);
 }
 
-// Handle Submit button click
-// Handle Submit button click
+// Submit button function
 submitButton.onclick = function () {
-  //submitButton.disabled = true; // Disable the button to prevent multiple submissions
+  submitButton.disabled = true;
 
-  finishGame(); // Call finishGame when submit button is clicked
+  finishGame();
 
   const isPuzzleValid = validatePuzzle(typeMatrix);
-
   if (isPuzzleValid) {
     const cond2 = validatePath(typeMatrix);
     if (cond2) {
@@ -104,16 +98,14 @@ submitButton.onclick = function () {
   }
 };
 
-// Handle Back to Menu button click
+// Back to Menu button
 backButton.onclick = function () {
-  // Show the landing screen and hide the game screen
   landingScreen.classList.remove("hidden");
   gameScreen.classList.add("hidden");
 };
 
 //--------------------------------------------Map Layouts-------------------------------
-// Hardcoded map layout for the 5x5 grid
-// "S" = Soil, "B" = Bridge, "M" = Mountain, "W" = Water
+// "S" = Soil, "B" = Bridge, "M" = Mountain, "W" = Oasis/water
 const easyMapLayout01 = [
   ["S", "MBL", "S", "S", "W"],
   ["S", "S", "S", "BVR", "W"],
@@ -211,7 +203,7 @@ const allHardMaps = [
   hardMapLayout05,
 ];
 
-// Image sources for each terrain type
+// Image sources for hardcoded map generation
 const allRestrictedImages = {
   S: { src: "pics/tiles/empty.png", transform: "rotate(0deg)" },
   W: { src: "pics/tiles/oasis.png", transform: "rotate(0deg)" },
@@ -253,44 +245,36 @@ const noRestrictionImages = {
   LSHR: { src: "pics/tiles/straight_rail.png", transform: "rotate(90deg)" },
 };
 
-function createTerrainImage(type) {
-  // Get the terrain image data from the allRestrictedImages object
+// function to insert image to innitialize map
+function createInitializationImage(type) {
   const imageData = allRestrictedImages[type];
-
-  // Create an <img> element and set its properties
   const img = document.createElement("img");
   img.src = imageData.src;
-  img.alt = type; // Set alt text for accessibility
-  img.style.transform = imageData.transform; // Apply the rotation
-
-  // Add any additional classes or styles if needed
+  img.alt = type;
+  img.style.transform = imageData.transform;
   img.classList.add("w-full", "h-full");
 
   return img;
 }
 
 function createNoRestrictionImage(type) {
-  // Get the terrain image data from the allRestrictedImages object
   const imageData = noRestrictionImages[type];
-
-  // Create an <img> element and set its properties
   const img = document.createElement("img");
   img.src = imageData.src;
-  img.alt = type; // Set alt text for accessibility
-  img.style.transform = imageData.transform; // Apply the rotation
-
-  // Add any additional classes or styles if needed
+  img.alt = type;
+  img.style.transform = imageData.transform;
   img.classList.add("w-full", "h-full");
 
   return img;
 }
 
 //------------------------------------------------Create Map---------------------------------
-let typeMatrix = []; // Declare typeMatrix at a higher scope to be accessible in both functions
-function generateGrid(difficulty) {
-  gameGrid.innerHTML = ""; // Clear any existing grid content
 
-  // Determine grid size and layout based on difficulty
+let typeMatrix = [];
+//function to generate grid
+function generateGrid(difficulty) {
+  gameGrid.innerHTML = "";
+
   let mapLayout = null;
   let gridSize = 0;
   if (difficulty === "Easy") {
@@ -302,33 +286,25 @@ function generateGrid(difficulty) {
     const randomIndex = Math.floor(Math.random() * allHardMaps.length);
     mapLayout = allHardMaps[randomIndex];
   }
-  //Innitialize typeMatrix
+
   typeMatrix = Array.from({ length: gridSize }, () =>
     Array(gridSize).fill(null)
   );
 
-  // Set grid CSS styles to create a dynamic grid layout without gaps
   gameGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
   gameGrid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
 
-  // Generate grid cells based on the map layout
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const cellType = mapLayout[row][col];
       const cell = document.createElement("div");
       cell.classList.add("border", "cursor-pointer");
 
-      // Set the background image based on terrain type
-      const img = createTerrainImage(cellType);
-      // const img = document.createElement("img");
-      // img.src = allRestrictedImages[cellType];
-      // img.alt = cellType; // Optional: Set alt text for accessibility
-      // img.classList.add("w-full", "h-full"); // Make the image fill the cell
+      const img = createInitializationImage(cellType);
 
-      cell.appendChild(img); // Add the image to the cell
-      gameGrid.appendChild(cell); // Add the cell to the grid
+      cell.appendChild(img);
+      gameGrid.appendChild(cell);
 
-      // Store the initial type in typeMatrix
       typeMatrix[row][col] = cellType;
       cell.addEventListener("click", () =>
         changeImage(cell, cellType, row, col)
@@ -339,12 +315,11 @@ function generateGrid(difficulty) {
 //------------------ placement of images----------------------------------------
 
 function changeImage(cell, cellType, row, col) {
-  // Get the current image in the cell
   const img = cell.querySelector("img");
-  let newType = cellType; // Track the new cell type
+  let newType = cellType;
 
   switch (cellType) {
-    case "S": // Soil: Cycle through all images in noRestrictionImages
+    case "S":
       const noRestrictionKeys = Object.keys(noRestrictionImages);
       let soilIndex = noRestrictionKeys.indexOf(img.alt);
       soilIndex = (soilIndex + 1) % noRestrictionKeys.length;
@@ -352,91 +327,93 @@ function changeImage(cell, cellType, row, col) {
         noRestrictionKeys[soilIndex]
       );
 
-      cell.replaceChild(newSoilImage, img); // Replace the current image with the new one
-      newType = noRestrictionKeys[soilIndex]; // Update the new type based on the new image
+      cell.replaceChild(newSoilImage, img);
+      newType = noRestrictionKeys[soilIndex];
       break;
 
-    case "W": // Water: Do nothing as it cannot be changed
+    case "W":
       return;
 
-    case "BHR": // Horizontal Bridge: Cycle between BHR and LBHR
+    case "BHR":
       const bridgeHImages = ["BHR", "LBHR"];
       let bridgeHIndex = bridgeHImages.indexOf(img.alt);
       bridgeHIndex = (bridgeHIndex + 1) % bridgeHImages.length;
-      const newBridgeHImage = createTerrainImage(bridgeHImages[bridgeHIndex]);
+      const newBridgeHImage = createInitializationImage(
+        bridgeHImages[bridgeHIndex]
+      );
 
-      cell.replaceChild(newBridgeHImage, img); // Replace the current image with the new one
-      newType = bridgeHImages[bridgeHIndex]; // Update the new type
+      cell.replaceChild(newBridgeHImage, img);
+      newType = bridgeHImages[bridgeHIndex];
 
       break;
 
-    case "BVR": // Vertical Bridge: Cycle between BVR and LBVR
+    case "BVR":
       const bridgeVImages = ["BVR", "LBVR"];
       let bridgeVIndex = bridgeVImages.indexOf(img.alt);
       bridgeVIndex = (bridgeVIndex + 1) % bridgeVImages.length;
-      const newBridgeVImage = createTerrainImage(bridgeVImages[bridgeVIndex]);
+      const newBridgeVImage = createInitializationImage(
+        bridgeVImages[bridgeVIndex]
+      );
 
-      cell.replaceChild(newBridgeVImage, img); // Replace the current image with the new one
-      newType = bridgeVImages[bridgeVIndex]; // Update the new type
+      cell.replaceChild(newBridgeVImage, img);
+      newType = bridgeVImages[bridgeVIndex];
 
       break;
 
-    case "MBR": // Mountain base right: Cycle between MBR and LMBR
+    case "MBR":
       const mountainBRImages = ["MBR", "LMBR"];
       let mountainBRIndex = mountainBRImages.indexOf(img.alt);
       mountainBRIndex = (mountainBRIndex + 1) % mountainBRImages.length;
-      const newMountainBRImage = createTerrainImage(
+      const newMountainBRImage = createInitializationImage(
         mountainBRImages[mountainBRIndex]
       );
 
-      cell.replaceChild(newMountainBRImage, img); // Replace the current image with the new one
-      newType = mountainBRImages[mountainBRIndex]; // Update the new type
+      cell.replaceChild(newMountainBRImage, img);
+      newType = mountainBRImages[mountainBRIndex];
 
       break;
 
-    case "MBL": // Mountain base left: Cycle between MBL and LMBL
+    case "MBL":
       const mountainBLImages = ["MBL", "LMBL"];
       let mountainBLIndex = mountainBLImages.indexOf(img.alt);
       mountainBLIndex = (mountainBLIndex + 1) % mountainBLImages.length;
-      const newMountainBLImage = createTerrainImage(
+      const newMountainBLImage = createInitializationImage(
         mountainBLImages[mountainBLIndex]
       );
 
-      cell.replaceChild(newMountainBLImage, img); // Replace the current image with the new one
-      newType = mountainBLImages[mountainBLIndex]; // Update the new type
+      cell.replaceChild(newMountainBLImage, img);
+      newType = mountainBLImages[mountainBLIndex];
 
       break;
 
-    case "MTL": // Mountain top left: Cycle between MTL and LMTL
+    case "MTL":
       const mountainTLImages = ["MTL", "LMTL"];
       let mountainTLIndex = mountainTLImages.indexOf(img.alt);
       mountainTLIndex = (mountainTLIndex + 1) % mountainTLImages.length;
-      const newMountainTLImage = createTerrainImage(
+      const newMountainTLImage = createInitializationImage(
         mountainTLImages[mountainTLIndex]
       );
-      newType = mountainTLImages[mountainTLIndex]; // Update the new type
+      newType = mountainTLImages[mountainTLIndex];
 
-      cell.replaceChild(newMountainTLImage, img); // Replace the current image with the new one
+      cell.replaceChild(newMountainTLImage, img);
       break;
 
-    case "MTR": // Mountain top right: Cycle between MTR and LMTR
+    case "MTR":
       const mountainTRImages = ["MTR", "LMTR"];
       let mountainTRIndex = mountainTRImages.indexOf(img.alt);
       mountainTRIndex = (mountainTRIndex + 1) % mountainTRImages.length;
-      const newMountainTRImage = createTerrainImage(
+      const newMountainTRImage = createInitializationImage(
         mountainTRImages[mountainTRIndex]
       );
 
-      cell.replaceChild(newMountainTRImage, img); // Replace the current image with the new one
-      newType = mountainTRImages[mountainTRIndex]; // Update the new type
+      cell.replaceChild(newMountainTRImage, img);
+      newType = mountainTRImages[mountainTRIndex];
 
       break;
 
     default:
       console.warn(`Unknown cell type: ${cellType}`);
   }
-  // Update the typeMatrix with the new type after the image change
-  //console.log(newType);
   typeMatrix[row][col] = newType;
 }
 
@@ -446,23 +423,18 @@ function finishGame() {
   const elapsedTimeElement = document.querySelector("#elapsedTime");
   const gameFinishedMessage = document.querySelector("#gameFinishedMessage");
 
-  // Get the final elapsed time from the elapsedTimeElement text
   const finalTime = elapsedTimeElement.textContent;
 
-  // Stop the timer
   stopTimer();
 
-  // Display the game finished message
   gameFinishedMessage.textContent = `Game finished at: ${finalTime}`;
 
-  // Reset the elapsed time display to 00:00
   elapsedTimeElement.textContent = "00:00";
 }
 
 // ----------------checking part------------------------------
 
 //-----------------------------no null cell--------------------------
-// Define valid types that each non-water cell should contain
 const validPathTypes = [
   "LBVR",
   "LBHR",
@@ -484,7 +456,6 @@ function validateNoNullCell(typeMatrix) {
     for (let col = 0; col < typeMatrix[row].length; col++) {
       const cellType = typeMatrix[row][col];
 
-      // Check if the cell is non-water and does not contain a valid path type
       if (!validPathTypes.includes(cellType)) {
         console.log(
           `Puzzle is incomplete. Cell at (${row}, ${col}) is missing a valid path type.\n
@@ -495,25 +466,19 @@ function validateNoNullCell(typeMatrix) {
     }
   }
 
-  // All non-water cells contain a valid path type
   return true;
 }
 
 function validatePuzzle(typeMatrix) {
-  // Check the first condition: all non-water cells must have a valid path type
   const isNoNullCellValid = validateNoNullCell(typeMatrix);
 
   if (!isNoNullCellValid) {
     console.log(
       "Puzzle validation failed: A non-water cell is missing a path type."
     );
-    return false; // Stop further validation
+    return false;
   }
-
-  // Continue with further validation checks here if needed
   console.log("First condition passed. Proceeding with further checks...");
-
-  // Additional validation checks can be added here
 
   return true;
 }
@@ -521,33 +486,32 @@ function validatePuzzle(typeMatrix) {
 function getEndpoints(cellType) {
   switch (cellType) {
     case "W":
-      return []; // Water cells have no endpoints
+      return [];
     case "LBVR":
-      return ["t", "b"]; // Vertical bridge connects top to bottom
+      return ["t", "b"];
     case "LBHR":
-      return ["l", "r"]; // Horizontal bridge connects left to right
+      return ["l", "r"];
     case "LSVR":
-      return ["t", "b"]; // Vertical straight line
+      return ["t", "b"];
     case "LSHR":
-      return ["l", "r"]; // Horizontal straight line
+      return ["l", "r"];
     case "CBR":
-      return ["r", "b"]; // Curve connects right to bottom
+      return ["r", "b"];
     case "CBL":
-      return ["l", "b"]; // Curve connects left to bottom
+      return ["l", "b"];
     case "CTL":
-      return ["l", "t"]; // Curve connects left to top
+      return ["l", "t"];
     case "CTR":
-      return ["r", "t"]; // Curve connects right to top
+      return ["r", "t"];
     case "LMBR":
-      return ["r", "b"]; // Curve connects right to bottom
+      return ["r", "b"];
     case "LMBL":
-      return ["l", "b"]; // Curve connects left to bottom
+      return ["l", "b"];
     case "LMTL":
-      return ["l", "t"]; // Curve connects left to top
+      return ["l", "t"];
     case "LMTR":
-      return ["r", "t"]; // Curve connects right to top
+      return ["r", "t"];
 
-    // Add any other cell types as needed
     default:
       return [];
   }
@@ -555,9 +519,7 @@ function getEndpoints(cellType) {
 
 function checkConnection(cell2, direction) {
   const cell2Endpoints = getEndpoints(cell2.type);
-  console.log(cell2Endpoints);
-  console.log(direction);
-  // Determine the required endpoint direction to connect cell1 and cell2
+
   if (direction === "r" && cell2Endpoints.includes("l")) {
     return true;
   }
@@ -571,7 +533,7 @@ function checkConnection(cell2, direction) {
     return true;
   }
 
-  return false; // If none of these cases are satisfied, there's no valid connection
+  return false;
 }
 
 function validatePath(typeMatrix) {
@@ -586,16 +548,15 @@ function validatePath(typeMatrix) {
         }
       }
     }
-    return null; // No valid starting cell found
+    return null;
   }
 
   const startCell = findStartCell();
-  //console.log(startCell);
-  if (!startCell) return false; // No starting point for traversal
+  if (!startCell) return false;
 
   let { row, col } = startCell;
   let visitedCells = 0;
-  let previousEnd = null; // Tracks the endpoint connected to the previous cell
+  let previousEnd = null;
 
   const directions = {
     t: { rowOffset: -1, colOffset: 0, opposite: "b" },
@@ -604,14 +565,12 @@ function validatePath(typeMatrix) {
     r: { rowOffset: 0, colOffset: 1, opposite: "l" },
   };
 
-  const totalPathCells = gridSize * gridSize - countWaterCells(typeMatrix); // Total cells to visit
-
-  // Get the starting cell's endpoints and choose the first endpoint to begin traversal
+  const totalPathCells = gridSize * gridSize - countWaterCells(typeMatrix);
   const startCellType = typeMatrix[row][col];
   console.log(startCellType);
   const startEndpoints = getEndpoints(startCellType);
   console.log(startEndpoints);
-  let initialDirection = startEndpoints[0]; // Choose the first endpoint of the start cell
+  let initialDirection = startEndpoints[0];
   console.log(initialDirection);
 
   // Use initial direction to find the first adjacent cell
@@ -628,7 +587,7 @@ function validatePath(typeMatrix) {
     firstCol < 0 ||
     firstCol >= gridSize
   ) {
-    return false; // Out of bounds for the first move
+    return false;
   }
 
   const firstCellType = typeMatrix[firstRow][firstCol];
@@ -637,40 +596,30 @@ function validatePath(typeMatrix) {
     firstCellType === "W" ||
     !checkConnection({ type: firstCellType }, initialDirection)
   ) {
-    return false; // First connection invalid
+    return false;
   }
-  console.log("Passed first one");
-  // Move to the first adjacent cell
   row = firstRow;
   col = firstCol;
-  previousEnd = firstDirection.opposite; // Set the opposite of initial direction as previousEnd
+  previousEnd = firstDirection.opposite;
   visitedCells++;
-  console.log(row, col, previousEnd);
-  console.log("outer loop ok");
-  // Traverse cells based on endpoints until loop is completed
-  console.log("total path cells : " + totalPathCells);
   while (visitedCells < totalPathCells) {
     const cellType = typeMatrix[row][col];
     const cellEndpoints = getEndpoints(cellType);
 
-    // Check if we are revisiting the start cell before completing the loop
     if (visitedCells > 0 && row === startCell.row && col === startCell.col) {
       console.log("visited cells: " + visitedCells);
-      return false; // Returned to the starting cell too soon
+      return false;
     }
 
-    // Ensure the previous endpoint is valid
     if (previousEnd != null && !cellEndpoints.includes(previousEnd)) {
       console.log(
         "previous end : " + previousEnd + "cell endpoints : " + cellEndpoints
       );
-      return false; // The previous cell's end does not match the current cell's start
+      return false;
     }
 
     visitedCells++;
     let connected = false;
-
-    // Identify the remaining endpoint that we need to use to connect to the next cell
     const nextEnd = cellEndpoints.find((end) => end !== previousEnd);
 
     if (nextEnd) {
@@ -678,7 +627,6 @@ function validatePath(typeMatrix) {
       const nextRow = row + direction.rowOffset;
       const nextCol = col + direction.colOffset;
 
-      // Ensure the next cell is within bounds
       if (
         nextRow >= 0 &&
         nextRow < gridSize &&
@@ -688,12 +636,10 @@ function validatePath(typeMatrix) {
         const nextCellType = typeMatrix[nextRow][nextCol];
         const nextCell = { type: nextCellType };
 
-        // Check if the next cell is not water and connects correctly
         if (nextCellType !== "W" && checkConnection(nextCell, nextEnd)) {
-          // Move to the next cell
           row = nextRow;
           col = nextCol;
-          previousEnd = direction.opposite; // Set the opposite direction for the next connection
+          previousEnd = direction.opposite;
           connected = true;
         } else {
           console.log(
@@ -714,11 +660,9 @@ function validatePath(typeMatrix) {
 
     if (!connected) {
       console.log("No valid connection found for ");
-      return false; // If no valid connection is found, stop the traversal
+      return false;
     }
   }
-
-  // After completing the traversal, check if the last cell connects to the remaining endpoint of the starting cell
   const lastCellType = typeMatrix[row][col];
   const lastCellEndpoints = getEndpoints(lastCellType);
 
@@ -729,7 +673,6 @@ function validatePath(typeMatrix) {
   );
 }
 
-// Helper to count "W" cells in the matrix
 function countWaterCells(typeMatrix) {
   return typeMatrix.flat().filter((type) => type === "W").length;
 }
