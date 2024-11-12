@@ -47,7 +47,7 @@ hardButton.onclick = function () {
 
 // Handle Start Game button click
 startGameButton.onclick = function () {
-  submitButton.disabled = false; // Enable the submit button
+  //submitButton.disabled = false; // Enable the submit button
 
   const playerName = playerNameInput.value.trim();
 
@@ -88,14 +88,17 @@ function stopTimer() {
 // Handle Submit button click
 // Handle Submit button click
 submitButton.onclick = function () {
-  submitButton.disabled = true; // Disable the button to prevent multiple submissions
+  //submitButton.disabled = true; // Disable the button to prevent multiple submissions
 
   finishGame(); // Call finishGame when submit button is clicked
 
   const isPuzzleValid = validatePuzzle(typeMatrix);
 
   if (isPuzzleValid) {
-    console.log("Puzzle solved successfully!");
+    const cond2 = validatePath(typeMatrix);
+    if (cond2) {
+      console.log("Puzzle solved successfully!");
+    }
   } else {
     console.log("Puzzle is not solved.");
   }
@@ -143,7 +146,7 @@ const easyMapLayout05 = [
   ["S", "S", "BHR", "S", "S"],
   ["S", "MBR", "S", "S", "S"],
   ["BVR", "S", "S", "MTR", "S"],
-  ["S", "S", "BHR", "W", "S"],
+  ["S", "S", "BVR", "W", "S"],
   ["S", "MTL", "S", "S", "S"],
 ];
 const allEasyMaps = [
@@ -457,6 +460,8 @@ function finishGame() {
 }
 
 // ----------------checking part------------------------------
+
+//-----------------------------no null cell--------------------------
 // Define valid types that each non-water cell should contain
 const validPathTypes = [
   "LBVR",
@@ -511,4 +516,220 @@ function validatePuzzle(typeMatrix) {
   // Additional validation checks can be added here
 
   return true;
+}
+//------------------------------------Check adjacent cells-----------------------
+function getEndpoints(cellType) {
+  switch (cellType) {
+    case "W":
+      return []; // Water cells have no endpoints
+    case "LBVR":
+      return ["t", "b"]; // Vertical bridge connects top to bottom
+    case "LBHR":
+      return ["l", "r"]; // Horizontal bridge connects left to right
+    case "LSVR":
+      return ["t", "b"]; // Vertical straight line
+    case "LSHR":
+      return ["l", "r"]; // Horizontal straight line
+    case "CBR":
+      return ["r", "b"]; // Curve connects right to bottom
+    case "CBL":
+      return ["l", "b"]; // Curve connects left to bottom
+    case "CTL":
+      return ["l", "t"]; // Curve connects left to top
+    case "CTR":
+      return ["r", "t"]; // Curve connects right to top
+    case "LMBR":
+      return ["r", "b"]; // Curve connects right to bottom
+    case "LMBL":
+      return ["l", "b"]; // Curve connects left to bottom
+    case "LMTL":
+      return ["l", "t"]; // Curve connects left to top
+    case "LMTR":
+      return ["r", "t"]; // Curve connects right to top
+
+    // Add any other cell types as needed
+    default:
+      return [];
+  }
+}
+
+function checkConnection(cell2, direction) {
+  const cell2Endpoints = getEndpoints(cell2.type);
+  console.log(cell2Endpoints);
+  console.log(direction);
+  // Determine the required endpoint direction to connect cell1 and cell2
+  if (direction === "r" && cell2Endpoints.includes("l")) {
+    return true;
+  }
+  if (direction === "l" && cell2Endpoints.includes("r")) {
+    return true;
+  }
+  if (direction === "t" && cell2Endpoints.includes("b")) {
+    return true;
+  }
+  if (direction === "b" && cell2Endpoints.includes("t")) {
+    return true;
+  }
+
+  return false; // If none of these cases are satisfied, there's no valid connection
+}
+
+function validatePath(typeMatrix) {
+  const gridSize = typeMatrix.length;
+
+  // Function to get a valid non-water starting cell
+  function findStartCell() {
+    for (let row = 0; row < gridSize; row++) {
+      for (let col = 0; col < gridSize; col++) {
+        if (typeMatrix[row][col] !== "W") {
+          return { row, col };
+        }
+      }
+    }
+    return null; // No valid starting cell found
+  }
+
+  const startCell = findStartCell();
+  //console.log(startCell);
+  if (!startCell) return false; // No starting point for traversal
+
+  let { row, col } = startCell;
+  let visitedCells = 0;
+  let previousEnd = null; // Tracks the endpoint connected to the previous cell
+
+  const directions = {
+    t: { rowOffset: -1, colOffset: 0, opposite: "b" },
+    b: { rowOffset: 1, colOffset: 0, opposite: "t" },
+    l: { rowOffset: 0, colOffset: -1, opposite: "r" },
+    r: { rowOffset: 0, colOffset: 1, opposite: "l" },
+  };
+
+  const totalPathCells = gridSize * gridSize - countWaterCells(typeMatrix); // Total cells to visit
+
+  // Get the starting cell's endpoints and choose the first endpoint to begin traversal
+  const startCellType = typeMatrix[row][col];
+  console.log(startCellType);
+  const startEndpoints = getEndpoints(startCellType);
+  console.log(startEndpoints);
+  let initialDirection = startEndpoints[0]; // Choose the first endpoint of the start cell
+  console.log(initialDirection);
+
+  // Use initial direction to find the first adjacent cell
+  const firstDirection = directions[initialDirection];
+  console.log(firstDirection);
+  const firstRow = row + firstDirection.rowOffset;
+  console.log(firstRow);
+  const firstCol = col + firstDirection.colOffset;
+  console.log(firstCol);
+
+  if (
+    firstRow < 0 ||
+    firstRow >= gridSize ||
+    firstCol < 0 ||
+    firstCol >= gridSize
+  ) {
+    return false; // Out of bounds for the first move
+  }
+
+  const firstCellType = typeMatrix[firstRow][firstCol];
+  console.log(firstCellType);
+  if (
+    firstCellType === "W" ||
+    !checkConnection({ type: firstCellType }, initialDirection)
+  ) {
+    return false; // First connection invalid
+  }
+  console.log("Passed first one");
+  // Move to the first adjacent cell
+  row = firstRow;
+  col = firstCol;
+  previousEnd = firstDirection.opposite; // Set the opposite of initial direction as previousEnd
+  visitedCells++;
+  console.log(row, col, previousEnd);
+  console.log("outer loop ok");
+  // Traverse cells based on endpoints until loop is completed
+  console.log("total path cells : " + totalPathCells);
+  while (visitedCells < totalPathCells) {
+    const cellType = typeMatrix[row][col];
+    const cellEndpoints = getEndpoints(cellType);
+
+    // Check if we are revisiting the start cell before completing the loop
+    if (visitedCells > 0 && row === startCell.row && col === startCell.col) {
+      console.log("visited cells: " + visitedCells);
+      return false; // Returned to the starting cell too soon
+    }
+
+    // Ensure the previous endpoint is valid
+    if (previousEnd != null && !cellEndpoints.includes(previousEnd)) {
+      console.log(
+        "previous end : " + previousEnd + "cell endpoints : " + cellEndpoints
+      );
+      return false; // The previous cell's end does not match the current cell's start
+    }
+
+    visitedCells++;
+    let connected = false;
+
+    // Identify the remaining endpoint that we need to use to connect to the next cell
+    const nextEnd = cellEndpoints.find((end) => end !== previousEnd);
+
+    if (nextEnd) {
+      const direction = directions[nextEnd];
+      const nextRow = row + direction.rowOffset;
+      const nextCol = col + direction.colOffset;
+
+      // Ensure the next cell is within bounds
+      if (
+        nextRow >= 0 &&
+        nextRow < gridSize &&
+        nextCol >= 0 &&
+        nextCol < gridSize
+      ) {
+        const nextCellType = typeMatrix[nextRow][nextCol];
+        const nextCell = { type: nextCellType };
+
+        // Check if the next cell is not water and connects correctly
+        if (nextCellType !== "W" && checkConnection(nextCell, nextEnd)) {
+          // Move to the next cell
+          row = nextRow;
+          col = nextCol;
+          previousEnd = direction.opposite; // Set the opposite direction for the next connection
+          connected = true;
+        } else {
+          console.log(
+            "not matching cells : " + nextCellType,
+            nextCell,
+            nextEnd
+          );
+          return false;
+        }
+      } else {
+        console.log("out of bounds" + nextRow, nextCol);
+        return false;
+      }
+    } else {
+      console.log("next end not found", nextEnd, cellEndpoints, previousEnd);
+      return false;
+    }
+
+    if (!connected) {
+      console.log("No valid connection found for ");
+      return false; // If no valid connection is found, stop the traversal
+    }
+  }
+
+  // After completing the traversal, check if the last cell connects to the remaining endpoint of the starting cell
+  const lastCellType = typeMatrix[row][col];
+  const lastCellEndpoints = getEndpoints(lastCellType);
+
+  return (
+    lastCellEndpoints.includes(previousEnd) &&
+    row === startCell.row &&
+    col === startCell.col
+  );
+}
+
+// Helper to count "W" cells in the matrix
+function countWaterCells(typeMatrix) {
+  return typeMatrix.flat().filter((type) => type === "W").length;
 }
