@@ -47,6 +47,8 @@ hardButton.onclick = function () {
 
 // Handle Start Game button click
 startGameButton.onclick = function () {
+  submitButton.disabled = false; // Enable the submit button
+
   const playerName = playerNameInput.value.trim();
 
   // Check if a difficulty is selected and a name is entered
@@ -67,27 +69,6 @@ startGameButton.onclick = function () {
   }
 };
 
-// // Function to generate the grid based on difficulty
-// function generateGrid(difficulty) {
-//   // Clear any existing grid content
-//   gameGrid.innerHTML = "";
-
-//   // Determine grid size based on difficulty
-//   const gridSize = difficulty === "Easy" ? 5 : 7;
-
-//   // Set grid CSS styles to create a dynamic grid layout
-//   gameGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-//   gameGrid.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
-
-//   // Generate grid cells
-//   for (let i = 0; i < gridSize * gridSize; i++) {
-//     const cell = document.createElement("div");
-//     cell.classList.add("w-16", "h-16", "border", "bg-white", "cursor-pointer");
-//     cell.setAttribute("data-cell", i); // Optional attribute to identify the cell
-//     gameGrid.appendChild(cell);
-//   }
-// }
-
 // Timer function
 function startTimer() {
   let elapsedSeconds = 0;
@@ -107,6 +88,8 @@ function stopTimer() {
 // Handle Submit button click
 // Handle Submit button click
 submitButton.onclick = function () {
+  submitButton.disabled = true; // Disable the button to prevent multiple submissions
+
   finishGame(); // Call finishGame when submit button is clicked
 
   const isPuzzleValid = validatePuzzle(typeMatrix);
@@ -344,13 +327,15 @@ function generateGrid(difficulty) {
 
       // Store the initial type in typeMatrix
       typeMatrix[row][col] = cellType;
-      cell.addEventListener("click", () => changeImage(cell, cellType));
+      cell.addEventListener("click", () =>
+        changeImage(cell, cellType, row, col)
+      );
     }
   }
 }
 //------------------ placement of images----------------------------------------
 
-function changeImage(cell, cellType) {
+function changeImage(cell, cellType, row, col) {
   // Get the current image in the cell
   const img = cell.querySelector("img");
   let newType = cellType; // Track the new cell type
@@ -448,6 +433,7 @@ function changeImage(cell, cellType) {
       console.warn(`Unknown cell type: ${cellType}`);
   }
   // Update the typeMatrix with the new type after the image change
+  //console.log(newType);
   typeMatrix[row][col] = newType;
 }
 
@@ -473,8 +459,19 @@ function finishGame() {
 // ----------------checking part------------------------------
 // Define valid types that each non-water cell should contain
 const validPathTypes = [
-  "LBVR", "LBHR", "LSVR", "LSHR", "CBR", "CBL", "CTL", "CTR",
-  "LMBR", "LMBL", "LMTL", "LMTR", "W"
+  "LBVR",
+  "LBHR",
+  "LSVR",
+  "LSHR",
+  "CBR",
+  "CBL",
+  "CTL",
+  "CTR",
+  "LMBR",
+  "LMBL",
+  "LMTL",
+  "LMTR",
+  "W",
 ];
 
 function validateNoNullCell(typeMatrix) {
@@ -515,4 +512,3 @@ function validatePuzzle(typeMatrix) {
 
   return true;
 }
-
