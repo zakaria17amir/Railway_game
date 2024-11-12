@@ -1,0 +1,33 @@
+#rules-body ul {
+    list-style-type: disc; 
+    padding-left: 20px; 
+    text-align: left;
+}
+
+#rules-body li, h6 {
+    text-align: left; 
+}
+/* Active button styling */
+.active {
+    background-color: #28a745;
+    color: white;
+}
+/* Style for grid layout */
+.game-grid {
+    display: grid;
+    width: fit-content;
+    margin: 0 auto;
+    border: 2px solid #ddd;
+}
+
+/* Ensure the grid cells fit a 5x5 layout with fixed sizes */
+.game-grid img {
+    width: 100px;
+    height: 100px;
+}
+
+
+
+
+
+
