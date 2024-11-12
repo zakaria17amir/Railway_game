@@ -105,9 +105,9 @@ function stopTimer() {
 }
 
 // Handle Submit button click
+// Handle Submit button click
 submitButton.onclick = function () {
-  stopTimer();
-  // Further functionality can be added here
+  finishGame(); // Call finishGame when submit button is clicked
 };
 
 // Handle Back to Menu button click
@@ -417,5 +417,24 @@ function changeImage(cell, cellType) {
     default:
       console.warn(`Unknown cell type: ${cellType}`);
   }
+}
+
+//----------------minimum requirements done-----------------------------------
+// Finish game function to stop the timer, display message, and reset elapsed time
+function finishGame() {
+  const elapsedTimeElement = document.querySelector("#elapsedTime");
+  const gameFinishedMessage = document.querySelector("#gameFinishedMessage");
+
+  // Get the final elapsed time from the elapsedTimeElement text
+  const finalTime = elapsedTimeElement.textContent;
+
+  // Stop the timer
+  stopTimer();
+
+  // Display the game finished message
+  gameFinishedMessage.textContent = `Game finished at: ${finalTime}`;
+
+  // Reset the elapsed time display to 00:00
+  elapsedTimeElement.textContent = "00:00";
 }
 
