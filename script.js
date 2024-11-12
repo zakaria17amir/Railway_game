@@ -731,12 +731,50 @@ submitButton.onclick = function () {
 
   document.querySelector("#submissionMessage").textContent = message;
 
-  function updateLeaderboard() {
-    const leaderboard = document.querySelector("#leaderboard");
-    //finaltime , selectedifficulty,playername
-    const listItem = document.createElement("li");
-    listItem.innerText = `${selectedDifficulty} : ${playerNameInput.value} : ${finalTime}`;
-    leaderboard.appendChild(listItem);
-  }
   if (isPathValid) updateLeaderboard();
 };
+
+/*in this function  we are using the loacalstorage to save the leaderboard data
+which is sorted on difficulty first and then sorted on time for each difficulty */
+function updateLeaderboard() {
+  const leaderboardData = JSON.parse(localStorage.getItem("leaderboard")) || [];
+  const parsedFinalTime = finalTime;
+  const playerName = playerNameInput.value;
+
+  leaderboardData.push({
+    difficulty: selectedDifficulty,
+    name: playerName,
+    time: parsedFinalTime,
+  });
+
+  leaderboardData.sort((a, b) => {
+    if (a.difficulty !== b.difficulty) {
+      return a.difficulty === "Hard" ? -1 : 1;
+    }
+    return a.time.localeCompare(b.time);
+  });
+
+  localStorage.setItem("leaderboard", JSON.stringify(leaderboardData));
+  const leaderboard = document.querySelector("#leaderboard");
+  leaderboard.innerHTML = "";
+
+  leaderboardData.forEach((elem) => {
+    const listItem = document.createElement("li");
+    listItem.innerText = `${elem.difficulty} : ${elem.name} : ${elem.time}`;
+    leaderboard.appendChild(listItem);
+  });
+}
+
+//on loading the window the leaderboard is shown using this function
+window.addEventListener("load", function () {
+  //localStorage.clear();
+  const leaderboardData = JSON.parse(localStorage.getItem("leaderboard")) || [];
+  const leaderboard = document.querySelector("#leaderboard");
+  leaderboard.innerHTML = "";
+
+  leaderboardData.forEach((elem) => {
+    const listItem = document.createElement("li");
+    listItem.innerText = `${elem.difficulty} : ${elem.name} : ${elem.time}`;
+    leaderboard.appendChild(listItem);
+  });
+});

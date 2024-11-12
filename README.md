@@ -32,5 +32,5 @@ Basic tasks (12 points)
 Bonus tasks (5 points)
 
 - [ ] Save: The game's state can be saved during gameplay, and upon reopening the page, the last saved state can be loaded (1 point)
-- [ ] Save: Leaderboards are saved in LocalStorage, and are accessible even after reloading the page (2 points)
+- [x] Save: Leaderboards are saved in LocalStorage, and are accessible even after reloading the page (2 points)
 - [ ] Element placement: Drawing the path by holding down the mouse button and moving across the cells (2 points)
