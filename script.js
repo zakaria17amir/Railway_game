@@ -108,6 +108,14 @@ function stopTimer() {
 // Handle Submit button click
 submitButton.onclick = function () {
   finishGame(); // Call finishGame when submit button is clicked
+
+  const isPuzzleValid = validatePuzzle(typeMatrix);
+
+  if (isPuzzleValid) {
+    console.log("Puzzle solved successfully!");
+  } else {
+    console.log("Puzzle is not solved.");
+  }
 };
 
 // Handle Back to Menu button click
@@ -152,7 +160,7 @@ const easyMapLayout05 = [
   ["S", "S", "BHR", "S", "S"],
   ["S", "MBR", "S", "S", "S"],
   ["BVR", "S", "S", "MTR", "S"],
-  ["S", "S", "B", "W", "S"],
+  ["S", "S", "BHR", "W", "S"],
   ["S", "MTL", "S", "S", "S"],
 ];
 const allEasyMaps = [
@@ -205,7 +213,7 @@ const hardMapLayout05 = [
   ["S", "BHR", "BHR", "S", "MBL", "S", "S"],
   ["S", "S", "S", "S", "S", "S", "S"],
   ["S", "S", "MBR", "S", "W", "S", "S"],
-  ["S", "MTL", "S", "MVR", "S", "S", "S"],
+  ["S", "MTL", "S", "BVR", "S", "S", "S"],
   ["S", "S", "S", "S", "S", "S", "S"],
 ];
 
@@ -237,11 +245,19 @@ const allRestrictedImages = {
   LMBL: { src: "pics/tiles/mountain_rail.png", transform: "rotate(90deg)" },
   LMTL: { src: "pics/tiles/mountain_rail.png", transform: "rotate(180deg)" },
   LMTR: { src: "pics/tiles/mountain_rail.png", transform: "rotate(270deg)" },
+
+  CBR: { src: "pics/tiles/curve_rail.png", transform: "rotate(0deg)" },
+  CBL: { src: "pics/tiles/curve_rail.png", transform: "rotate(90deg)" },
+  CTL: { src: "pics/tiles/curve_rail.png", transform: "rotate(180deg)" },
+  CTR: { src: "pics/tiles/curve_rail.png", transform: "rotate(270deg)" },
+
+  LSVR: { src: "pics/tiles/straight_rail.png", transform: "rotate(0deg)" },
+  LSHR: { src: "pics/tiles/straight_rail.png", transform: "rotate(90deg)" },
 };
 
 const noRestrictionImages = {
   S: { src: "pics/tiles/empty.png", transform: "rotate(0deg)" },
-  
+
   CBR: { src: "pics/tiles/curve_rail.png", transform: "rotate(0deg)" },
   CBL: { src: "pics/tiles/curve_rail.png", transform: "rotate(90deg)" },
   CTL: { src: "pics/tiles/curve_rail.png", transform: "rotate(180deg)" },
@@ -283,8 +299,8 @@ function createNoRestrictionImage(type) {
   return img;
 }
 
-
 //------------------------------------------------Create Map---------------------------------
+let typeMatrix = []; // Declare typeMatrix at a higher scope to be accessible in both functions
 function generateGrid(difficulty) {
   gameGrid.innerHTML = ""; // Clear any existing grid content
 
@@ -295,13 +311,15 @@ function generateGrid(difficulty) {
     gridSize = 5;
     const randomIndex = Math.floor(Math.random() * allEasyMaps.length);
     mapLayout = allEasyMaps[randomIndex];
-  }
-  else
-  {
+  } else {
     gridSize = 7;
     const randomIndex = Math.floor(Math.random() * allHardMaps.length);
     mapLayout = allHardMaps[randomIndex];
   }
+  //Innitialize typeMatrix
+  typeMatrix = Array.from({ length: gridSize }, () =>
+    Array(gridSize).fill(null)
+  );
 
   // Set grid CSS styles to create a dynamic grid layout without gaps
   gameGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
@@ -315,7 +333,7 @@ function generateGrid(difficulty) {
       cell.classList.add("border", "cursor-pointer");
 
       // Set the background image based on terrain type
-      const img = createTerrainImage(cellType)
+      const img = createTerrainImage(cellType);
       // const img = document.createElement("img");
       // img.src = allRestrictedImages[cellType];
       // img.alt = cellType; // Optional: Set alt text for accessibility
@@ -324,18 +342,18 @@ function generateGrid(difficulty) {
       cell.appendChild(img); // Add the image to the cell
       gameGrid.appendChild(cell); // Add the cell to the grid
 
+      // Store the initial type in typeMatrix
+      typeMatrix[row][col] = cellType;
       cell.addEventListener("click", () => changeImage(cell, cellType));
-
     }
   }
 }
 //------------------ placement of images----------------------------------------
 
-
-
 function changeImage(cell, cellType) {
   // Get the current image in the cell
   const img = cell.querySelector("img");
+  let newType = cellType; // Track the new cell type
 
   switch (cellType) {
     case "S": // Soil: Cycle through all images in noRestrictionImages
@@ -347,6 +365,7 @@ function changeImage(cell, cellType) {
       );
 
       cell.replaceChild(newSoilImage, img); // Replace the current image with the new one
+      newType = noRestrictionKeys[soilIndex]; // Update the new type based on the new image
       break;
 
     case "W": // Water: Do nothing as it cannot be changed
@@ -359,6 +378,8 @@ function changeImage(cell, cellType) {
       const newBridgeHImage = createTerrainImage(bridgeHImages[bridgeHIndex]);
 
       cell.replaceChild(newBridgeHImage, img); // Replace the current image with the new one
+      newType = bridgeHImages[bridgeHIndex]; // Update the new type
+
       break;
 
     case "BVR": // Vertical Bridge: Cycle between BVR and LBVR
@@ -368,6 +389,8 @@ function changeImage(cell, cellType) {
       const newBridgeVImage = createTerrainImage(bridgeVImages[bridgeVIndex]);
 
       cell.replaceChild(newBridgeVImage, img); // Replace the current image with the new one
+      newType = bridgeVImages[bridgeVIndex]; // Update the new type
+
       break;
 
     case "MBR": // Mountain base right: Cycle between MBR and LMBR
@@ -379,6 +402,8 @@ function changeImage(cell, cellType) {
       );
 
       cell.replaceChild(newMountainBRImage, img); // Replace the current image with the new one
+      newType = mountainBRImages[mountainBRIndex]; // Update the new type
+
       break;
 
     case "MBL": // Mountain base left: Cycle between MBL and LMBL
@@ -390,6 +415,8 @@ function changeImage(cell, cellType) {
       );
 
       cell.replaceChild(newMountainBLImage, img); // Replace the current image with the new one
+      newType = mountainBLImages[mountainBLIndex]; // Update the new type
+
       break;
 
     case "MTL": // Mountain top left: Cycle between MTL and LMTL
@@ -399,6 +426,7 @@ function changeImage(cell, cellType) {
       const newMountainTLImage = createTerrainImage(
         mountainTLImages[mountainTLIndex]
       );
+      newType = mountainTLImages[mountainTLIndex]; // Update the new type
 
       cell.replaceChild(newMountainTLImage, img); // Replace the current image with the new one
       break;
@@ -412,11 +440,15 @@ function changeImage(cell, cellType) {
       );
 
       cell.replaceChild(newMountainTRImage, img); // Replace the current image with the new one
+      newType = mountainTRImages[mountainTRIndex]; // Update the new type
+
       break;
 
     default:
       console.warn(`Unknown cell type: ${cellType}`);
   }
+  // Update the typeMatrix with the new type after the image change
+  typeMatrix[row][col] = newType;
 }
 
 //----------------minimum requirements done-----------------------------------
@@ -436,5 +468,51 @@ function finishGame() {
 
   // Reset the elapsed time display to 00:00
   elapsedTimeElement.textContent = "00:00";
+}
+
+// ----------------checking part------------------------------
+// Define valid types that each non-water cell should contain
+const validPathTypes = [
+  "LBVR", "LBHR", "LSVR", "LSHR", "CBR", "CBL", "CTL", "CTR",
+  "LMBR", "LMBL", "LMTL", "LMTR", "W"
+];
+
+function validateNoNullCell(typeMatrix) {
+  for (let row = 0; row < typeMatrix.length; row++) {
+    for (let col = 0; col < typeMatrix[row].length; col++) {
+      const cellType = typeMatrix[row][col];
+
+      // Check if the cell is non-water and does not contain a valid path type
+      if (!validPathTypes.includes(cellType)) {
+        console.log(
+          `Puzzle is incomplete. Cell at (${row}, ${col}) is missing a valid path type.\n
+          cell type is ${cellType}`
+        );
+        return false;
+      }
+    }
+  }
+
+  // All non-water cells contain a valid path type
+  return true;
+}
+
+function validatePuzzle(typeMatrix) {
+  // Check the first condition: all non-water cells must have a valid path type
+  const isNoNullCellValid = validateNoNullCell(typeMatrix);
+
+  if (!isNoNullCellValid) {
+    console.log(
+      "Puzzle validation failed: A non-water cell is missing a path type."
+    );
+    return false; // Stop further validation
+  }
+
+  // Continue with further validation checks here if needed
+  console.log("First condition passed. Proceeding with further checks...");
+
+  // Additional validation checks can be added here
+
+  return true;
 }
 
