@@ -4,14 +4,14 @@ const rulesPopup = document.querySelector("#rulesPopup");
 const closeButton = document.querySelector("#closeRules");
 
 // Show the popup when "Rules" button is clicked
-rulesButton.onclick = function () {
+rulesButton.addEventListener("click", function () {
   rulesPopup.classList.remove("hidden");
-};
+});
 
 // Hide the popup when the close button is clicked
-closeButton.onclick = function () {
+closeButton.addEventListener("click", function () {
   rulesPopup.classList.add("hidden");
-};
+});
 
 //---------------------------- Generation of Grid based on user input -----------------------------//
 
@@ -19,6 +19,7 @@ closeButton.onclick = function () {
 const easyButton = document.querySelector("#easyButton");
 const hardButton = document.querySelector("#hardButton");
 const startGameButton = document.querySelector("#startGameButton");
+const backButton = document.querySelector("#backButton");
 const playerNameInput = document.querySelector("#playerName");
 const gameScreen = document.querySelector("#gameScreen");
 const errorMessage = document.querySelector("#errorMessage");
@@ -28,24 +29,26 @@ const playerDisplayName = document.querySelector("#playerDisplayName");
 const playerNameDisplay = document.querySelector("#playerNameDisplay");
 const gameGrid = document.querySelector("#gameGrid");
 const submitButton = document.querySelector("#submitButton");
+const gameFinishedMessage = document.querySelector("#gameFinishedMessage");
+const submissionMessage = document.querySelector("#submissionMessage");
 
 let timerInterval = null;
 let selectedDifficulty = null;
 
 // at the same time we can  only select easy or hard button
 //difficulty selection for Easy
-easyButton.onclick = function () {
+easyButton.addEventListener("click", function () {
   selectedDifficulty = "Easy";
   easyButton.classList.add("active");
   hardButton.classList.remove("active");
-};
+});
 
 //difficulty selection for Hard
-hardButton.onclick = function () {
+hardButton.addEventListener("click", function () {
   selectedDifficulty = "Hard";
   hardButton.classList.add("active");
   easyButton.classList.remove("active");
-};
+});
 
 // Start Game function
 /*In this function at first we hide our landing page upon clicking the start game button
@@ -54,8 +57,11 @@ we get the player name and grid size from the name input field and difficulty se
 button and generate a grid based on the difficulty and start the timer
 to count the solution time and an error message is shown if one tries to start the game
 without giving name or selecting difficulty*/
-startGameButton.onclick = function () {
+startGameButton.addEventListener("click", function () {
   submitButton.disabled = false;
+  gameFinishedMessage.textContent = "";
+  submissionMessage.textContent = "";
+  errorMessage.textContent = "";
 
   const playerName = playerNameInput.value.trim();
 
@@ -71,7 +77,7 @@ startGameButton.onclick = function () {
     errorMessage.textContent =
       "Please enter your name and select a difficulty to start the game.";
   }
-};
+});
 
 // Timer function
 //This function is used to track the time used for solving the puzzle
@@ -93,10 +99,10 @@ function stopTimer() {
 
 // Back to Menu button
 //this function is for hiding the game screen and going back to the menu/landing page
-backButton.onclick = function () {
+backButton.addEventListener("click", function () {
   landingScreen.classList.remove("hidden");
   gameScreen.classList.add("hidden");
-};
+});
 
 //--------------------------------------------Map Layouts-------------------------------
 /* S = Soil, W = Oasis/water, BVR = Virtical Bridge, BHR = Horizontal Bridge
@@ -452,7 +458,6 @@ function changeImage(cell, cellType, row, col) {
 let finalTime = null;
 function finishGame() {
   const elapsedTimeElement = document.querySelector("#elapsedTime");
-  const gameFinishedMessage = document.querySelector("#gameFinishedMessage");
 
   finalTime = elapsedTimeElement.textContent;
 
@@ -718,7 +723,7 @@ function countWaterCells(typeMatrix) {
 /*by clicking submit button the programs stras to check if the puzzle has been solved
 based on result it sends a message and if the puzzle is solved then it adds player name 
 to the leaderboard with type and time */
-submitButton.onclick = function () {
+submitButton.addEventListener("click", function () {
   submitButton.disabled = true;
 
   finishGame();
@@ -729,10 +734,12 @@ submitButton.onclick = function () {
     ? "Congratulations! Puzzle solved successfully!"
     : "Better luck next time.";
 
-  document.querySelector("#submissionMessage").textContent = message;
+  submissionMessage.textContent = message;
+  if (isPathValid) submissionMessage.style.color = "green";
+  else submissionMessage.style.color = "red";
 
   if (isPathValid) updateLeaderboard();
-};
+});
 
 /*in this function  we are using the loacalstorage to save the leaderboard data
 which is sorted on difficulty first and then sorted on time for each difficulty */
