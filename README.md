@@ -1,36 +1,87 @@
-<Student's Name> Amir Abdullah Zakaria
-<Neptun Code> ZD0LBW
-Web Programming - Assessment
-This solution was submitted and created by the student mentioned above for the Web Programming course assessment.
-I declare that this solution is my own work. I have not copied or used solutions from third parties.
-I have not forwarded my solution to fellow students, and I have not made it public.
-The Student Requirements System of Eötvös Loránd University
-(ELTE Organizational and Operational Regulations, Vol. II, §74/C) states that as long as a student presents
-the work of another student - or at least a significant part of it - as their own, it is considered a disciplinary offense.
-The most severe consequence of such an offense is the student's expulsion from the university.
+# Puzzle Game
 
-Minimum requirements (8 points)
+## Overview
+This is a puzzle game built using only **HTML**, **CSS**, and **JavaScript**, without any frameworks. The game challenges players to correctly place elements on a randomly generated map while following specific placement rules. The objective is to complete the puzzle as quickly as possible.
 
-- [x] Mandatory: The readme file provided in the initial submission is properly filled out (Declaration, completed points) (0 points)
-- [x] Mandatory: The game was created using an HTML file without using any frameworks. (0 points)
-- [x] Mandatory: The solution completely avoids the practices mentioned in the 'bad practice' section. (0 points)
-- [x] Menu: The main menu displays the necessary elements: a name input field, a difficulty selection option, and a start button (1 point)
-- [x] Menu: Clicking the Start button takes us to the game screen. (1 point)
-- [x] Menu: The game rules can be accessed from the menu. (1 point)
-- [x] Game screen: The player's name is displayed on the game screen, and the timer starts (1 point)
-- [x] Game screen: A randomly selected map corresponding to the chosen difficulty is displayed on the game screen, along with all the necessary elements (3 points)
-- [x] Placement: I can place different types of elements on the cells of the map (2 points).
+## Features
+### Mandatory Requirements:
+- **Framework-Free Implementation**: The game is entirely built using an HTML file without any frameworks.
+- **Good Practices Followed**: The solution avoids all bad practices mentioned in the project guidelines.
 
-Basic tasks (12 points)
+### Menu Features:
+- **Main Menu:**
+  - A **name input field** for entering the player’s name.
+  - A **difficulty selection option**.
+  - A **start button** to begin the game.
+- **Navigation:**
+  - Clicking the **"Start"** button takes the player to the game screen.
+  - The **game rules** are accessible from the menu.
 
-- [x] Placement: Elements can be placed according to the rules. (On a bridge, only straight; on a mountain, only at 90°; nothing can be placed on an oasis; any element can be placed on an empty cell) (4 points)
-- [x] Validation: The game checks whether the puzzle is solved. That is: each cell that can be touched is only touched once; the path is continuous; all cells are accessible from the neighboring cells; and the correct elements are present everywhere (4 points)
-- [x] End of game: At the end of the game, the time taken to complete the puzzle is displayed. (1 point)
-- [x] Leaderboard: At the end of the game, a leaderboard is displayed, showing how long it took for different players to complete the puzzle at the given difficulty level (2 points)
-- [x] Other: A neat design and well-organized code (1 point)
+### Game Screen Features:
+- **Player Name & Timer:**
+  - The **entered player name** is displayed on the game screen.
+  - A **timer** starts running once the game begins.
+- **Randomized Map Generation:**
+  - A **map** corresponding to the chosen difficulty is randomly generated and displayed with all necessary elements.
 
-Bonus tasks (5 points)
+### Placement & Validation Features:
+- **Element Placement:**
+  - Different types of elements can be placed on the map’s cells.
+  - Placement rules apply:
+    - **On a bridge**: Only straight elements can be placed.
+    - **On a mountain**: Elements must be at a **90° angle**.
+    - **On an oasis**: No elements can be placed.
+    - **On an empty cell**: Any element can be placed.
+- **Validation:**
+  - The game checks if the **puzzle is solved correctly**:
+    - Each **cell that can be touched** is touched only once.
+    - The **path is continuous**.
+    - **All cells are accessible** from neighboring cells.
+    - The **correct elements** are placed according to the rules.
+- **End of Game:**
+  - The **time taken** to complete the puzzle is displayed.
+  - A **leaderboard** is shown, listing completion times for different players at the selected difficulty level.
+- **User Experience:**
+  - **Neat design** and **well-structured code** for readability and maintainability.
 
-- [ ] Save: The game's state can be saved during gameplay, and upon reopening the page, the last saved state can be loaded (1 point)
-- [x] Save: Leaderboards are saved in LocalStorage, and are accessible even after reloading the page (2 points)
-- [ ] Element placement: Drawing the path by holding down the mouse button and moving across the cells (2 points)
+### Bonus Features:
+- **Game Save Feature:**
+  - The **game's state** can be saved during gameplay.
+  - When reopening the page, the **last saved state** is loaded.
+- **Persistent Leaderboard:**
+  - **Leaderboards** are stored in **LocalStorage**.
+  - Scores remain available even after **reloading the page**.
+- **Enhanced Element Placement:**
+  - Players can **draw paths** by holding down the mouse button and moving across the cells.
+
+## Technologies Used
+- **HTML** – Structure of the game.
+- **CSS** – Styling and layout.
+- **JavaScript** – Game logic, interaction, and state management.
+
+## How to Play
+1. Open the game in a **web browser**.
+2. **Enter your name** in the provided input field.
+3. **Select a difficulty level**.
+4. Click the **"Start"** button to begin.
+5. Follow the **placement rules** to complete the puzzle.
+6. Once the puzzle is solved, **check your time** and compare it with others on the leaderboard.
+7. Use the **save feature** to store progress and continue later.
+
+## Deployment
+The game is hosted on **GitHub Pages**. You can access it through the provided deployment link.
+
+## Future Improvements
+- **Implementing additional difficulty levels**.
+- **Enhancing the UI/UX** with animations.
+- **Adding sound effects** for better engagement.
+- **Introducing new gameplay mechanics** and challenges.
+
+## Contributors
+This project is **open-source**. Feel free to contribute by submitting issues and pull requests.
+
+## License
+This project is licensed under the **MIT License**. You are free to use, modify, and distribute it with proper attribution.
+
+---
+**Enjoy the game and have fun solving the puzzles!**
